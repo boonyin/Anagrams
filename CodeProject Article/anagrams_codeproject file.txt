@@ -1,0 +1,125 @@
+<h2>Introduction</h2>
+
+<p>A few years ago, my wife started playing the Anagrams game from the Hoyle Word Games CD.  The 
+game presents you with a scrambled 6-letter word, and presents you with an opportunity to find 
+10-20 words that exist within the original word in a short amount of time.  All the while, a 
+pair of off-screen cannibals try to distract you with witty reparte, questions about your 
+computer system, word suggestions (that are never right for the scramble you're currently 
+working with), and sometimes, outright taunting. </p>
+
+<p>While somewhat amusing (based solely on what the off-screen cannibals might be saying), the game 
+is severely limited in it's scope, and in my humble opinion, arbitrarily so.  First, your 
+scrambled word is never comprised of more than six letters, making for a limited dictionary.  
+Second, the number of words are radically fewer than what actually exist in the scrambled word.  
+Mind you, I'm not talking about obscure and rarely used words, but plain english stuff that 
+any person with a even just a mediocre vocabulary would see.</p>
+
+<p><b>Note:<b> This is not a complex game, and the code certainly doesn't explore or exercise any 
+of the .Net framework's more esoteric functionality.  I simply wrote the game to help me learn 
+.Net (I've only been coding in C# since August of 2007).  There is no fancy interface, no 
+amazing 3-D effects, and no attempts to dazzle anyone.  It is what it is.</p>
+
+
+<h2>What I did</h2>
+
+<p>After becoming sufficiently annoyed with the game, I decided it wouldn't be too awful hard to 
+duplicate the game, but I wanted to include a much more far-reaching dictionatry. So, I searched 
+the web for lists of words of vraious lengths, from three to ten characters long.  I also wanted 
+to make sure I included as many valid words as possible.  So, I figuered I need to find lists of 
+words that were legal in the game Scrabble. What better source of words than the most famous and 
+popular word game in the world?  In no time I'd gathered a collection of over 125,000 words. </p>
+
+
+<h2>The Word Dictionary</h2>
+
+<p>Now that I had a sufficient list of words from which to bamboozle the user, I needed a way to 
+load them all into memory at the same time.  I created a "dictionary" class which created a word 
+list object for each set of words based on their character counts.</p>
+
+<p>Remember, we had words with from three to ten letters. As most of us already know, C# lists are 
+zero-based. To make accessing the word lists a little easier to maintain, the dictionary creates 
+11 word lists, with list index 0 through 2 not being used to store dictionary words.  However, 
+there was a use for at least one of these unused list indexes.</p>
+
+<p>Other dictionary functionality includes the ability to mark a word as having been used (so that 
+the user won't see the same scrambled word until all of the other words in that letter group have 
+been seen).  When all of the words in a group has been seen, only a percentage of the words are 
+marked as not having been used.  This reduces the change that a recently used word will be 
+presented again too soon after it's last use.</p>
+
+<p>While the dictionary object makes it easy to manage all of the word lists in a single location, 
+the real use of the dictionary is to allow the program to discover and track words that are 
+contained WITHIN the scrambled word.</p>
+
+
+<h2>Possible Words</h2>
+
+<p>Part of the game play support, the program has to be able to quickly identify words that are 
+indeed found within the scrambled word. It would be impractical to search all 120,000+ words to 
+see if one of them was a valid one.  So, the program takes the scrambled word, and searches all 
+of the word lists as soon as the scrambled word is available.  To store these possible words, 
+we use the 0th index in the list of word list objects.</p>
+
+<p>Finally, we use the numerous dictionary object methods to find and upodate this possible words 
+object. This includes marking possible words as already having been found and making the 
+validation of user-submitted words much simpler.</p>
+
+
+<h2>Game Configuration</h2>
+
+<p>I provided a bit of configuration capability regarding how many letters to allow in the scrambled 
+words, how much time is alloted to play a round, how much bonus time to allow, whether or not to 
+play the game sounds, and whether or not to allow repeating words.  These settings are saved via 
+the GameConfig.cs file. Here's the dialog box:</p>
+
+
+<p>The Game Panel</p>
+
+<p>This is nothing but a Windows Forms application. I had to play some tricks to get the panel to 
+react the way I wanted it to.  I needed a way for the user to be able to just hit the enter key 
+and have it submit the typed word. To do this, I created and hid an Submit button and made it the 
+"default" button.  With the Submit button taken care of, I had to find a way to illustrate the 
+time left to the user for the current round.</p>
+
+<p>I wanted to display the time remaining inside a progress bar, but I couldn't find a way to do 
+that with the standard progress bar control (which probably means it's there, I just didn't find 
+it).  So, I found a control class called SmoothProgressBar (I don't tremember where I found it, 
+but I didn't write it), and it allowed the text in bar.  As the timer winds down, the progress bar 
+and the text are updated to refect the amount of time remaining.</p>
+
+
+<h2>The Word List</h2>
+
+<p>I wanted a way to show the user what he'd typed, so I decided on a list box. As the program 
+validates and accepts submitted words, they are added to the list box (sorted alphabetically). 
+Then, when the user clicked Solve or the round expired naturally, I wanted to show all of the 
+words that were possible, yet show the words that the user had submitted in such a way as to 
+highlight those words.</p>
+
+<p>To accomplish this, I set the list box's DrawMode property to be <code>OwnerDrawFixed</code>, 
+and then overrode the DrawItem behavior.  This allowed me to draw certain items with different 
+appearances.  I settled on dark gary text for un-found words, and bold red italic text for words 
+the user found.</p>
+
+
+<h2>Statistics</h2>
+
+<p>I made a half-hearted attempt at providing a minimal set of statistics in the game.  These 
+stats aren't cataloged, but it wouldn't be hard to expand and thereby provide graphed results 
+and game-play histories.  I might even do that a little later.</p>
+
+
+<h2>The Sounds</h2>
+
+<p>Yeah, they suck.  If you want to replace them with something else, go ahead.  In fact, if you 
+know anyone with a clear speaking voice (preferrably a soft-spoken yet sultry female), have 
+her record the appropriate vocal indicators and let me know you have a new set of files.</p>
+
+
+<h2>In Closing</h2>
+
+<p>I fail to understand why Hoyle imposed arbitrary restrictions on their version of the game.  
+Maybe they wanted to keep the game to a limited intellectual level - I don't know.  I find the 
+game to be quite addictive because the rounds are short, and you tend to start saying to 
+yourself, "Just one more round before I go to work..."</p>
+
